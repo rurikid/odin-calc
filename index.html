@@ -8,32 +8,54 @@
     <link rel="stylesheet" href="./styles/styles.css" />
   </head>
   <header>
-    <vs-header />
+    <!-- <vs-header /> -->
     <p>Odin-Calc</p>
     <p><img class="trident" src="./images/vs.svg" /></p>
   </header>
-  <body>
-    <div class="display">
-      <div class="result-array">
-        <p>12346</p> <!--14digits, digit = 7x5, space between for decimal-->
+  <body class="flex-column flex-center">
+    <div class="flex-column flex-center canvas">
+      <div class="flex-column display">
+        <div class="result-array">
+          <p>12346</p> <!--14digits, digit = 7x5, space between for decimal-->
+        </div>
+        <div class="input-array">
+          <p>1246+4545</p> <!--14digits, digit = 7x5, space between for decimal-->
+        </div>
       </div>
-      <div class="input-array">
-        <p>1246+4545</p> <!--14digits, digit = 7x5, space between for decimal-->
+      <div class="flex-column controls">
+        <div class="flex-row commands">
+          <button class="btn">+/-</button>
+          <button class="btn">()</button>
+          <button class="btn"><-</button>
+        </div>
+        <div class="flex-row digits-operators">
+          <div class="flex-row digits text-shadow">
+            <button class="btn">7</button>
+            <button class="btn">8</button>
+            <button class="btn">9</button>
+            <button class="btn">4</button>
+            <button class="btn">5</button>
+            <button class="btn">6</button>
+            <button class="btn">1</button>
+            <button class="btn">2</button>
+            <button class="btn">3</button>
+            <button class="btn">0</button>
+            <button class="btn">.</button>
+            <button class="btn">C</button>
+          </div>
+          <div class="flex-column operators">
+            <button class="btn">/</button>
+            <button class="btn">x</button>
+            <button class="btn">-</button>
+            <button class="btn">+</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="commands">
-      +/- () <-
-    </div>
-    <div class="digits">
-      7 8 9 4 5 6 1 2 3 0 . C
-    </div>
-    <div class="operators">
-      / x - +
     </div>
   </body>
   <footer>
-    <vs-footer />
-    <p><span class="o-slash">Ø</span>Rurikid for <span class="top">The Odin Project</span></p>
+    <!-- vs-footer -->
+    <p><a href="https://www.github.com/rurikid"><span class="o-slash">Ø</span>Rurikid</a> for <a href="https://www.theodinproject.com"><span class="odin">The Odin Project</span></a></p>
     <p>© 2022</p>
   </footer>
 </html>
