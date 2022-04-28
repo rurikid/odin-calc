@@ -1,0 +1,59 @@
+:root {
+  --black: #161616;
+  --white: #D8D8D8;
+  --top: #CC9543;
+  --red: #D80000;
+  --ardor: #FF8000;
+}
+
+* {
+  box-sizing: border-box;
+  color: var(--white);
+}
+
+html {
+  background-color: var(--black);
+}
+
+footer {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 5vh;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  justify-content: center;
+}
+
+.trident {
+  height: 2rem;
+}
+
+.o-slash {
+  color: var(--red);
+}
+
+.odin {
+  color: var(--top);
+}
+
+.odin a:hover {
+  color: var(--red);
+}

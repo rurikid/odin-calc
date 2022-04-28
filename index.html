@@ -1,12 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <header>
+  <head>
     <title>Odin-Calc</title>
+    <link rel="icon" type="image/svg+xml" href="./images/vs.svg" />
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/vs-common.css" />
+    <link rel="stylesheet" href="./styles/styles.css" />
+  </head>
+  <header>
+    <vs-header />
+    <p>Odin-Calc</p>
+    <p><img class="trident" src="./images/vs.svg" /></p>
   </header>
   <body>
-
+    <div class="display">
+      <div class="result-array">
+        <p>12346</p> <!--14digits, digit = 7x5, space between for decimal-->
+      </div>
+      <div class="input-array">
+        <p>1246+4545</p> <!--14digits, digit = 7x5, space between for decimal-->
+      </div>
+    </div>
+    <div class="commands">
+      +/- () <-
+    </div>
+    <div class="digits">
+      7 8 9 4 5 6 1 2 3 0 . C
+    </div>
+    <div class="operators">
+      / x - +
+    </div>
   </body>
   <footer>
-    
+    <vs-footer />
+    <p><span class="o-slash">Ø</span>Rurikid for <span class="top">The Odin Project</span></p>
+    <p>© 2022</p>
   </footer>
 </html>
