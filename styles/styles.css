@@ -3,6 +3,10 @@
  --cell-width: 3px;
  --cell-height: 6px;
  --cell-spacing: 1px;
+ --column-cell-count: 7;
+ --row-cell-count: 5;
+ --array-cell-count: 14;
+ --decimal-diameter: 4px;
 }
 
 body {
@@ -13,7 +17,10 @@ body {
 }
 
 .canvas {
-  width: calc((var(--btn-width) + 3px) * 4);
+  width: calc((var(--cell-width) + 1px) *
+               var(--row-cell-count) *
+               var(--array-cell-count) - 1px +
+               (var(--decimal-diameter) + 3px) * var(--array-cell-count) - 2px);
   border: 1px solid var(--white);
   border-radius: 5px;
   padding: 5px;
@@ -26,17 +33,17 @@ body {
   width: var(--btn-width);
   font-size: 2rem;
   text-shadow: 2px 2px 3px var(--black);
-  /* margin: 1px; */
 }
 
 .display {
   background-color: mediumaquamarine;
-  padding: var(--cell-width) var(--cell-height) var(--cell-width) var(--cell-height);
+  padding: var(--cell-width);
+  border-radius: 2px;
 }
 
 .display-array {
-  height: calc((var(--cell-height) + 1px) * 7);
-  width: calc((var(--cell-width) + 1px) * 5 * 14);
+  height: calc((var(--cell-height) + 1px) * 
+                var(--column-cell-count) - 1px);
   flex-wrap: wrap;
 }
 
@@ -45,16 +52,24 @@ body {
 }
 
 .cell-array {
-  height: calc((var(--cell-height) + 1px) * 7);
-  width: calc((var(--cell-width) + 1px) * 5);
+  height: calc((var(--cell-height) + 1px) * 7 - 1px);
+  width: calc((var(--cell-width) + 1px) * 5 - 1px);
   margin-right: 1px;
   flex-wrap: wrap;
+}
+
+.cell-array:last-child {
+  margin-right: 0px;
 }
 
 .cell {
   height: var(--cell-height);
   width: var(--cell-width);
-  margin: 1px 1px 0px 0px;
+  margin: 0px 1px 1px 0px;
+}
+
+.cell:nth-child(5n + 5) {
+  margin-right: 0px;
 }
 
 .cell-on {
@@ -62,16 +77,15 @@ body {
 }
 
 .cell-space {
-  height: calc((var(--cell-height) + 1px) * 7);
+
 }
 
 .cell-decimal {
-  justify-self: flex-end;
-  align-self: flex-end;
-  height: calc(var(--cell-height) * 0.75);
-  width: calc(var(--cell-height) * 0.75);
+  height: var(--decimal-diameter);
+  width: var(--decimal-diameter);
   border-radius: 3px;
-  margin-right: 2px;
+  margin-left: 1px;
+  margin-right: 1px;
 }
 
 .controls {
