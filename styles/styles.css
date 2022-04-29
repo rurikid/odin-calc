@@ -21,22 +21,52 @@ body {
                var(--row-cell-count) *
                var(--array-cell-count) - 1px +
                (var(--decimal-diameter) + 3px) * var(--array-cell-count) - 2px);
-  border: 1px solid var(--white);
+  border: 1px solid var(--gray);
   border-radius: 5px;
   padding: 5px;
+  background-color: black;
 }
 
 .btn {
-  background-color: var(--gray);
-  border-radius: 5px;
-  height: 4vw;
-  width: var(--btn-width);
-  font-size: 2rem;
+  border-radius: 5px 5px 0px 0px;
+  height: 10vw;
+  width: calc(20% - 4px);
   text-shadow: 2px 2px 3px var(--black);
+  background-color: transparent;
+  margin: 5px 0px 0px 5px;
+}
+
+.btn:first-child {
+  margin: 0px;
+}
+
+.btn:nth-child(-n + 5) {
+  margin-top: 0px;
+}
+
+.btn:nth-child(5n + 6) {
+  margin-left: 0px;
+}
+
+.operator {
+  height: 70%;
+  border-radius: 5px 5px 0px 0px;
+  background-color: #161616FF;
+}
+
+.operator:hover {
+  background-color: #16161688;
+}
+
+.bevel {
+  background-color: #16161688;
+  border-radius: 0px 0px 5px 5px;
+  height: 30%;
+  width: 100%;
 }
 
 .display {
-  background-color: mediumaquamarine;
+  background-color:darkseagreen;
   padding: var(--cell-width);
   border-radius: 2px;
 }
@@ -66,6 +96,7 @@ body {
   height: var(--cell-height);
   width: var(--cell-width);
   margin: 0px 1px 1px 0px;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .cell:nth-child(5n + 5) {
@@ -76,44 +107,23 @@ body {
   background-color: black;
 }
 
-.cell-space {
-
-}
-
 .cell-decimal {
   height: var(--decimal-diameter);
   width: var(--decimal-diameter);
   border-radius: 3px;
   margin-left: 1px;
   margin-right: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .controls {
-  /* width: 400px; */
-}
-
-.commands {
-  /* align-content: space-between;
-  justify-content: space-between; */
-  /* align-content: flex-start; */
-  /* justify-content: flex-start; */
-}
-
-.digits-operators {
-
+  flex-wrap: wrap;
+  padding-top: 5px;
+  width: 100%;
 }
 
 .digits {
   flex-wrap: wrap;
   /* align-content: space-between;
   justify-content: space-between; */
-}
-
-.operators {
-  /* align-content: space-between;
-  justify-content: space-between; */
-}
-
-.operators {
-  /* flex-grow: 8; */
 }
