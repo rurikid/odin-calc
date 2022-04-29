@@ -1,0 +1,72 @@
+:root {
+  --black: #161616;
+  --gray: #646464;
+  --white: #D8D8D8;
+  --top: #CC9543;
+  --red: #D80000;
+  --ardor: #FF8000;
+}
+
+* {
+  box-sizing: border-box;
+  color: var(--white);
+}
+
+html {
+  background-color: var(--black);
+}
+
+footer {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 5vh;
+}
+
+footer a {
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--red);
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  align-content: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  justify-items: flex-end;
+  align-content: flex-end;
+  align-items: flex-end;
+}
+
+.trident {
+  height: 2rem;
+}
+
+.o-slash {
+  color: var(--red);
+}
+
+.odin:hover {
+  color: var(--top);
+}
