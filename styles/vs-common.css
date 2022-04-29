@@ -48,7 +48,15 @@ footer a:hover {
   justify-content: center;
   align-content: center;
   justify-items: center;
-  justify-content: center;
+  align-content: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  justify-items: flex-end;
+  align-content: flex-end;
+  align-items: flex-end;
 }
 
 .trident {
