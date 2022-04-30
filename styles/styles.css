@@ -24,12 +24,13 @@ body {
   border: 1px solid var(--gray);
   border-radius: 5px;
   padding: 5px;
+  margin: 1rem;
   background-color: black;
 }
 
 .btn {
   border-radius: 5px 5px 0px 0px;
-  height: 10vw;
+  height: 3rem;
   width: calc(20% - 4px);
   text-shadow: 2px 2px 3px var(--black);
   background-color: transparent;
