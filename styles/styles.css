@@ -100,14 +100,6 @@ body {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.cell:nth-child(5n + 5) {
-  margin-right: 0px;
-}
-
-.cell-on {
-  background-color: black;
-}
-
 .cell-decimal {
   height: var(--decimal-diameter);
   width: var(--decimal-diameter);
@@ -117,7 +109,15 @@ body {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.controls {
+.cell:nth-child(5n + 5) {
+  margin-right: 0px;
+}
+
+.cell-on {
+  background-color: black;
+}
+
+.keyboard {
   flex-wrap: wrap;
   padding-top: 5px;
   width: 100%;
@@ -125,6 +125,4 @@ body {
 
 .digits {
   flex-wrap: wrap;
-  /* align-content: space-between;
-  justify-content: space-between; */
 }
