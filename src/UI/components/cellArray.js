@@ -12,10 +12,8 @@ class CellArray {
   {
     let decimalArray = document.createElement("div");
     decimalArray.className = "flex-column flex-end cell-space";
-    // decimalArray.appendChild(Cell.getCell(isEnabled, true));
     let cell = Cell.getCell(isEnabled, true);
     decimalArray.appendChild(cell);
-    // console.log();
     return decimalArray;
   }
 
@@ -23,9 +21,8 @@ class CellArray {
   {
     let array = document.createElement("div");
     array.className = "flex-row flex-center cell-array";
-    let cell = Cell.getCell(false, false);
-    for (i = 0; i < 35; i++) {
-      array.appendChild(cell);
+    for (let i = 0; i < 35; i++) {
+      array.appendChild(Cell.getCell(false, false));
     }
     return array;
   }

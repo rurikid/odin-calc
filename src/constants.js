@@ -1,4 +1,5 @@
 const Constants = {
+  DigitCount: 14,
   Cursor: {
     id: "cursor",
     bits: [
@@ -186,6 +187,20 @@ const Constants = {
       bits: [
         "00000001000010011111001000010000000"
       ]
+    },
+    {
+      id: "leftArrow",
+      symbol: "‹",
+      style: 'style="font-size: 1.5rem;"' 
+    },
+    {
+      id: "enterBtn",
+      symbol: "ENTER"
+    },
+    {
+      id: "rightArrow",
+      symbol: "›",
+      style: 'style="font-size: 1.5rem;"',
     }
   ]
 }

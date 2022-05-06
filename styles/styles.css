@@ -72,13 +72,13 @@ body {
   border-radius: 2px;
 }
 
-.display-array {
+.digit-array {
   height: calc((var(--cell-height) + 1px) * 
                 var(--column-cell-count) - 1px);
   flex-wrap: wrap;
 }
 
-.display-array:first-child {
+.digit-array:first-child {
   margin-bottom: calc(var(--cell-height) * 1);
 }
 
@@ -125,4 +125,12 @@ body {
 
 .digits {
   flex-wrap: wrap;
+}
+
+#enterBtn {
+  flex-grow: 2;
+}
+
+#leftArrow, #rightArrow {
+  flex-grow: 1;
 }
