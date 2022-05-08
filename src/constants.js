@@ -1,45 +1,57 @@
+import { CharacterBits as Bits } from "../apis/characterBits.js"; 
+import { DigitArray } from "./ui/components/digitArray.js";
+
 const Constants = {
   DigitCount: 14,
   Cursor: {
     id: "cursor",
     bits: [
-      "00000000000000000000000000000011111"
+      Bits["cursor"]
     ]
   },
   Keys: [
     {
-      id: "plusMinus",
-      symbol: "+/-",
-      bits: [
-        "00000000000000011111000000000000000"
-      ]
-    },
-    {
       id: "parentheses",
       symbol: "( )",
       bits: [
-        "00001000100010000100001000001000001",
-        "10000010000010000100001000100010000"
-      ]
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "()",
+      inputOffset: -1
     },
     {
-      id: "exponent",
+      id: "inverse",
+      symbol: "1/x",
+      style: 'style="font-style: italic;"',
+      bits: [
+        Bits["I"], Bits["N"], Bits["V"],
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "INV()",
+      inputOffset: -1
+    },
+    {
+      id: "power",
       symbol: "y^x",
       style: 'style="font-style: italic;"',
       bits: [
-        "00100010101000100000000000000000000"
-      ]
+        Bits["^"]
+      ],
+      input: "^"
     },
     {
       id: "sqrt",
       symbol: "√x",
       style: 'style="font-style: italic;"',
       bits: [
-        "01110100011000001110000011000101110",
-        "01110100011000110001101011001001101",
-        "11110100011000111110101001001010001",
-        "11111001000010000100001000010000100"
-      ]
+        Bits["S"], Bits["Q"], Bits["R"], Bits["T"],
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "SQRT()",
+      inputOffset: -1
     },
     {
       id: "backspace",
@@ -49,114 +61,132 @@ const Constants = {
       id: "sin",
       symbol: "SIN",
       bits: [
-        "01110100011000001110000011000101110",
-        "01110001000010000100001000010001110",
-        "10001100011100110101100111000110001"
-      ]
+        Bits["S"], Bits["I"], Bits["N"],
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "SIN()",
+      inputOffset: -1
     },
     {
       id: "numSeven",
       symbol: "7",
       bits: [
-        "11111000010001000100010000100001000"
-      ]
+        Bits["7"]
+      ],
+      input: "7"
     },
     {
       id: "numEight",
       symbol: "8",
       bits: [
-        "01110100011000101110100011000101110"
-      ]
+        Bits["8"]
+      ],
+      input: "8"
     },
     {
       id: "numNine",
       symbol: "9",
       bits: [
-        "01110100011000101111000010001001100"
-      ]
+        Bits["9"]
+      ],
+      input: "9"
     },
     {
       id: "division",
       symbol: "÷",
       style: 'style="font-size: 1.5rem;"',
       bits: [
-        "00000001000000011111000000010000000"
-      ]
+        Bits["÷"]
+      ],
+      input: "/"
     },
     {
       id: "cosine",
       symbol: "COS",
       bits: [
-        "01110100011000010000100001000110001",
-        "01110100010111010001100011000101110",
-        "01110100011000001110000011000101110"
-      ]
+        Bits["C"], Bits["O"], Bits["S"],
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "COS()",
+      inputOffset: -1
     },
     {
       id: "numFour",
       symbol: "4",
       bits: [
-        "00010001100101010010111110001000100"
-      ]
+        Bits["4"]
+      ],
+      input: "4"
     },
     {
       id: "numFive",
       symbol: "5",
       bits: [
-        "11111100001111000001000011000101110"
-      ]
+        Bits["5"]
+      ],
+      input: "5"
     },
     {
       id: "numSix",
       symbol: "6",
       bits: [
-        "00110010001000011110100011000101110"
-      ]
+        Bits["6"]
+      ],
+      input: "6"
     },
     {
       id: "multiply",
       symbol: "x",
       bits: [
-        "00000100010101000100010101000100000"
-      ]
+        Bits["*"]
+      ],
+      input: "x"
     },
     {
       id: "tangent",
       symbol: "TAN",
       bits: [
-        "11111001000010000100001000010000100",
-        "01110100011000111111100011000110001",
-        "10001100011100110101100111000110001"
-      ]
+        Bits["T"], Bits["A"], Bits["N"],
+        Bits["("], Bits[")"]
+      ],
+      cursorOffset: -1,
+      input: "TAN()",
+      inputOffset: -1
     },
     {
       id: "numOne",
       symbol: "1",
       bits: [
-        "00100011000010000100001000010001110"
-      ]
+        Bits["1"]
+      ],
+      input: "1"
     },
     {
       id: "numTwo",
       symbol: "2",
       bits: [
-        "01110100010000100110010001000011111"
-      ]
+        Bits["2"]
+      ],
+      input: "2"
     },
     {
       id: "numThree",
       symbol: "3",
       bits: [
-        "01110100010000101110000011000101110"
-      ]
+        Bits["3"]
+      ],
+      input: "3"
     },
     {
       id: "minus",
       symbol: "-",
       style: 'style="font-size: 1.5rem;"',
       bits: [
-        "00000000000000011111000000000000000"
-      ]
+        Bits["-"]
+      ],
+      input: "="
     },
     {
       id: "clear",
@@ -166,27 +196,30 @@ const Constants = {
       id: "numZero",
       symbol: "0",
       bits: [
-        "01110100011001110101110011000101110"
-      ]
+        Bits["0"]
+      ],
+      input: "0"
     },
     {
       id: "decimal",
       symbol: "."
     },
     {
-      id: "plusOne",
-      symbol: "Σ+",
+      id: "plusMinus",
+      symbol: "+/-",
       bits: [
-        "11111010010010000010001000100111111"
-      ]
+        Bits["_"]
+      ],
+      input: "_"
     },
     {
       id: "plus",
       symbol: "+",
       style: 'style="font-size: 1.5rem;"',
       bits: [
-        "00000001000010011111001000010000000"
-      ]
+        Bits["+"]
+      ],
+      input: "+"
     },
     {
       id: "leftArrow",

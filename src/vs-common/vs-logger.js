@@ -22,7 +22,7 @@ class Errors {
 
   static getPopup(text, level) {
     var popup = document.createElement("div");
-    popup.innerHTML = `<h1>${text}</h1><h2>×</h2>`;
+    popup.innerHTML = `<h1>${level}: ${text}</h1><h2>×</h2>`;
     popup.classList = `flex-center popup ${level}`;
     popup.onclick = (e) => this.onClick(e);
 
