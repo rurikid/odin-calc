@@ -7,9 +7,3 @@ let display = new Display();
 canvas.appendChild(display.node);
 let controls = new Controls(display);
 canvas.appendChild(Keyboard.getKeyboard(controls.Keys));
-
-display.input.setDisplay("HELLO");
-display.results.setDisplay("HELLO");
-
-controls.Keys[0].onclick();
-controls.Keys[0].onclick();
