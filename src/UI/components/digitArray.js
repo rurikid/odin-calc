@@ -21,8 +21,13 @@ class DigitArray {
     this.node = document.createElement("div");
     this.node.id = id;
     this.node.className = "flex-row digit-array";
-    document.getElementById("display").appendChild(this.node);
-    this.clear();
+
+    for (let i = 1; i <= this.digitCount; i++) {
+      this.node.appendChild(CellArray.getEmptyArray());
+      if (i != this.digitCount) {
+        this.node.appendChild(CellArray.getDecimalArray());
+      }
+    }
   }
 
   // replaces the node at {index} with {digit}
@@ -50,6 +55,7 @@ class DigitArray {
     document.getElementById(this.node.id).replaceChild(this.node.childNodes[cursorIndex - 2], node);
   }
 
+  // sets the display to digitString
   setDisplay(digitString) {
     this.clear();
     this.input = digitString;
@@ -111,11 +117,13 @@ class DigitArray {
     this.updateNode();
   }
 
+  // increments cursor position
   incrementCursor() {
     this.cursorIndex = this.cursorIndex + 2;
     this.inputIndex++;
   }
 
+  // decrements cursor position
   decrementCursor() {
     this.cursorIndex = this.cursorIndex === 0 ? 0 : this.cursorIndex - 2;
     this.inputIndex = this.inputIndex === 0 ? 0 : this.inputIndex - 1;
@@ -130,6 +138,7 @@ class DigitArray {
     }
   }
 
+  // toggles a digit display at {index}
   toggleDigit(index) {
     if (this.node.childNodes[index].id === "empty") {
       this.node.childNodes[index--].remove();
@@ -144,15 +153,18 @@ class DigitArray {
     this.updateDigit(index);
   }
 
+  // removes child at {index}
   removeChild(index) {
     this.node.childNodes[(index)].remove();    
   }
 
+  // updates the node at {index}
   updateDigit(index) {
     let node = document.getElementById(this.node.id).childNodes[index];
     document.getElementById(this.node.id).replaceChild(this.node.childNodes[index], node);
   }
 
+  // updates parent node
   updateNode() {
     document.getElementById(this.node.id).innerHTML = this.node.innerHTML;
   }
