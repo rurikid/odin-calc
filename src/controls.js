@@ -16,6 +16,7 @@ class Controls {
     }
   }
 
+  // TODO: Implement flashing cursor
   Cursor = {
     id: "cursor",
     bits: [
@@ -30,9 +31,6 @@ class Controls {
       cursorOffset: -1,
       input: "()",
       inputOffset: -1
-      // onclick: function(digitArray) {
-      //   digitArray.insert(this.input, this.inputOffset);
-      // }
     },
     {
       id: "inverse",
@@ -67,6 +65,7 @@ class Controls {
       input: "SQRT()",
       inputOffset: -1
     },
+    // TODO: Implement backspace functionality
     {
       id: "backspace",
       symbol: "←"
@@ -113,7 +112,7 @@ class Controls {
       bits: [
         Bits["÷"]
       ],
-      input: "/"
+      input: "÷"
     },
     {
       id: "cosine",
@@ -156,7 +155,7 @@ class Controls {
       bits: [
         Bits["*"]
       ],
-      input: "x"
+      input: "*"
     },
     {
       id: "tangent",
@@ -200,8 +199,9 @@ class Controls {
       bits: [
         Bits["-"]
       ],
-      input: "="
+      input: "-"
     },
+    // TODO: Implement clear functionality
     {
       id: "clear",
       symbol: "C"
@@ -214,10 +214,12 @@ class Controls {
       ],
       input: "0"
     },
+    // TODO: Implement decimal functionality
     {
       id: "decimal",
       symbol: "."
     },
+    // TODO: plusMinus should append sign to left-most digit and un-append
     {
       id: "plusMinus",
       symbol: "+/-",
@@ -235,15 +237,18 @@ class Controls {
       ],
       input: "+"
     },
+    // TODO: implement leftArrow
     {
       id: "leftArrow",
       symbol: "‹",
       style: 'style="font-size: 1.5rem;"' 
     },
+    // TODO: implement enter
     {
       id: "enterBtn",
       symbol: "ENTER"
     },
+    // TODO: implement rightArrow
     {
       id: "rightArrow",
       symbol: "›",
