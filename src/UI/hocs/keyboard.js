@@ -6,7 +6,9 @@ class Keyboard {
   static getKeyboard(keys) {
     let keyboard = document.createElement("div");
     keyboard.className = "flex-row flex-center keyboard";
-    keyboard.innerHTML = keys.map(x => Key.getKey(x)).join('');
+    let btns = keys.map(x => Key.getKey(x));
+    btns.forEach(btn => keyboard.appendChild(btn));
+    // keyboard.innerHTML = .join('');
     return keyboard;
   }
 }

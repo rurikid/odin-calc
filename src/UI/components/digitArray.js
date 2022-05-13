@@ -30,6 +30,18 @@ class DigitArray {
     }
   }
 
+  insert(digits, cursorOffset) {
+    digits.split('').forEach(char => this.appendRight(char));
+    
+    for (let i = Math.abs(cursorOffset); i > 0; i--) {
+      if (cursorOffset > 0) {
+        this.incrementCursor();
+      } else {
+        this.decrementCursor();
+      }
+    }
+  }
+
   // replaces the node at {index} with {digit}
   setDigit(digit, index) {
     if (digit === null || digit === undefined) Errors.error(`setDigit(${digit}, ${index}); digit is null`);
@@ -128,7 +140,7 @@ class DigitArray {
     this.cursorIndex = this.cursorIndex === 0 ? 0 : this.cursorIndex - 2;
     this.inputIndex = this.inputIndex === 0 ? 0 : this.inputIndex - 1;
 
-    if (cursorIndex === 0 && inputIndex !== 0) {
+    if (this.cursorIndex === 0 && this.inputIndex !== 0) {
       if (this.node.children[this.digitCount].id == "empty") {
         this.removeChild(this.digitCount);
       } else {
