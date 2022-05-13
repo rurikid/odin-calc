@@ -70,3 +70,44 @@ footer a:hover {
 .odin:hover {
   color: var(--top);
 }
+
+.popups {
+  width: 45%;
+  font-size: large;
+  position: fixed;
+  top: 1%;
+  z-index: 1;
+  border-radius: 3px;
+  gap: 3px;
+}
+
+.popup {
+  padding: 1rem;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid black;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  justify-content: space-between;
+  text-shadow: 2px 2px 5px black;
+  font-weight: bold;
+}
+
+.error {
+  background: repeating-linear-gradient(
+    45deg,
+    #d8000064,
+    #d8000064,
+    #16161664,
+    #16161664);
+  /* background-color: #D8000064; */
+}
+
+.warning {
+  background: repeating-linear-gradient(
+    45deg,
+    #d8d80064,
+    #d8d80064,
+    #16161664,
+    #16161664);
+}
