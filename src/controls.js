@@ -6,8 +6,6 @@ class Controls {
   constructor(digitArray) {
     this.digitArray = digitArray;
     
-    let parent = this;
-
     for (let i = 0; i < this.Keys.length; i++)
     {
       if (this.Keys[i].input) {
