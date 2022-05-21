@@ -84,7 +84,7 @@ body {
 }
 
 .cell-array {
-  height: calc((var(--cell-height) + 1px) * 7 - 1px);
+  height: calc((var(--cell-height) + 1px) * 7);
   width: calc((var(--cell-width) + 1px) * 5 - 1px);
   margin-right: 1px;
   flex-wrap: wrap;
@@ -128,14 +128,26 @@ body {
   flex-wrap: wrap;
 }
 
-.cursor {
-  background-color: red;
-  animation: cursor 1s linear infinite;
+.cursor:nth-child(-n + 30) {
+  /* background-color: red; */
+  animation: cursorOff 1s steps(1, end) -.5s infinite;
 }
 
-@keyframes cursor {
+.cursor:nth-last-child(-n + 5) {
+  /* background-color: blue; */
+  animation: cursorBar 1s steps(1, end) -.5s infinite;
+  /* animation:  */
+}
+
+@keyframes cursorBar {
   50% {
-    opacity: 0;
+    background-color: black;
+  }
+}
+
+@keyframes cursorOff {
+  50% {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 

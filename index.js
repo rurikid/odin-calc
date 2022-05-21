@@ -9,3 +9,4 @@ let controls = new Controls(display);
 canvas.appendChild(Keyboard.getKeyboard(controls.Keys));
 
 display.input.setDisplay("HELLOTHEREKENOBI");
+display.input.decrementCursor();

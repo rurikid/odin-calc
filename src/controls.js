@@ -239,7 +239,8 @@ class Controls {
     {
       id: "leftArrow",
       symbol: "‹",
-      style: 'style="font-size: 1.5rem;"' 
+      style: 'style="font-size: 1.5rem;"',
+      onclick: () => this.digitArray.input.decrementCursor()
     },
     // TODO: implement enter
     {
@@ -251,6 +252,7 @@ class Controls {
       id: "rightArrow",
       symbol: "›",
       style: 'style="font-size: 1.5rem;"',
+      onclick: () => this.digitArray.input.incrementCursor()
     }
   ];
 }

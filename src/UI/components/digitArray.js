@@ -11,6 +11,7 @@ class DigitArray {
   inputIndex;
   cursorIndex;
   alignment;
+  id;
   
   constructor(id, digitCount, displayAlign) {
     this.digitCount = digitCount;
@@ -19,12 +20,14 @@ class DigitArray {
     this.inputIndex = 0;
     this.cursorIndex = 0;
     this.displayAlign = displayAlign;
+    this.id = id;
 
     this.node = document.createElement("div");
     this.node.className = "flex-row digit-array";
     this.node.id = id;
 
     this.clear();
+    this.addCursor()
   }
 
   // replaces the node at {index} with {digit}
@@ -43,21 +46,6 @@ class DigitArray {
     this.insert(digits)
   }
 
-  // appends a decimal immediately following the cursor
-  addDecimal() {
-
-  }
-
-  // shifts the digitArray {count} times to the left
-  shiftLeft(count) {
-
-  }
-
-  // shifts the digitArray {count} times to the right
-  shiftRight(count) {
-
-  }
-
   // appends {digit} at {index}
   insert(digits, cursorOffset = 0) {
     // get reference node
@@ -65,19 +53,17 @@ class DigitArray {
 
     // needs to replace item at current index
     digits.split('').forEach(digit => {
+      // TODO: condition for decimal
+
       // insert before reference node, cell + decimal
       referenceCell.before(CellArray.getCellArray(digit));
       referenceCell.before(CellArray.getDecimalArray(digit === '.' ? true : false));
-  
-      // remove reference node and decimal
-      if (referenceCell !== this.node.lastChild) referenceCell.nextSibling.remove();
-      referenceCell.remove();
+
+      this.node.lastChild.remove();
+      this.node.lastChild.remove();
 
       // update input
       this.input = this.input.slice(0, this.inputIndex) + digit + this.input.slice(this.inputIndex);
-
-      console.log(this.input);
-      console.log(this.cursorIndex);
 
       // increment cursor
       this.incrementCursor();
@@ -85,13 +71,10 @@ class DigitArray {
       // update reference node
       referenceCell = this.node.childNodes[this.cursorIndex];
     })
-    console.log(cursorOffset);
 
     // correct for cursor offset
     this.cursorIndex += cursorOffset;
     this.inputIndex += cursorOffset;
-
-    console.log(this.input);
   }
 
   // clears the contents of the display and current formula
@@ -112,9 +95,41 @@ class DigitArray {
 
   // increments cursor position
   incrementCursor() {
-    this.inputIndex++;
+    if (this.inputIndex < this.input.length) {
+      // increment input
+      this.inputIndex++;
 
+      this.removeCursor();
+
+      this.shiftRight();
+
+      // increment cursor
+      this.cursorIndex = Math.min(this.cursorIndex + 2, this.cellCount);
+      
+      this.addCursor();
+    }
+  }
+
+  // removes cursor at current index
+  removeCursor() {
+    if (this.id === 'input') {
+      this.node.childNodes[this.cursorIndex].childNodes.forEach(node => {
+        if (node.classList.contains("cursor")) node.classList.remove("cursor")
+      });
+    }
+  }
+
+  // adds cursor at current index
+  addCursor() {
+    if (this.id === 'input') {
+      this.node.childNodes[this.cursorIndex].childNodes.forEach(node => node.classList.add("cursor"));
+    }
+  }
+
+  // shifts the digit array one digit right
+  shiftRight() {
     if (this.cursorIndex === this.cellCount) {
+      
       // scroll right
       this.node.firstChild.remove();
       this.node.firstChild.remove();
@@ -122,33 +137,52 @@ class DigitArray {
       // scroll input digit
       if (this.inputIndex !== this.input.length)
       {
-        console.log("scroll");
         // case for decimal
         if (this.input[this.inputIndex] == '.') {
-          this.node.lastChild.before(CellArray.getDecimalArray(true));
+          this.node.append(CellArray.getDecimalArray(true));
           this.inputIndex++;
         } else {
-          this.node.lastChild.before(CellArray.getDecimalArray(false));
+          this.node.append(CellArray.getDecimalArray(false));
         }
-        this.node.lastChild.replaceWith(CellArray.getCellArray(this.input[this.inputIndex]));
+        this.node.append(CellArray.getCellArray(this.input[this.inputIndex]));
       } else {
+        this.node.append(CellArray.getDecimalArray(false));
         this.node.append(CellArray.getEmptyArray());
       }
     }
-
-    this.cursorIndex = Math.min(this.cursorIndex + 2, this.cellCount);
-    
-    this.node.children[this.cursorIndex].classList += ' cursor';
   }
 
   // decrements cursor position
   decrementCursor() {
+    if (this.inputIndex > 0) {
+      // decrement input
+      this.inputIndex--;
 
+      this.removeCursor();
+
+      this.shiftLeft();
+
+      // decrement cursor
+      this.cursorIndex = Math.max(this.cursorIndex - 2, 0);
+      
+      this.addCursor();
+    }
   }
 
-  // removes child at {index}
-  removeChild(index) {
+  // shifts the digit array one digit left
+  shiftLeft() {
+    if (this.cursorIndex === 0) {
+      this.node.lastChild.remove();
+      this.node.lastChild.remove();
 
+      if (this.input[this.inputIndex] === '.') {
+        this.node.firstChild.before(CellArray.getDecimalArray(true));
+      } else {
+        this.node.firstChild.before(CellArray.getDecimalArray(false));
+      }
+
+      this.node.firstChild.before(CellArray.getCellArray(this.input[this.inputIndex]));
+    }
   }
 }
 
