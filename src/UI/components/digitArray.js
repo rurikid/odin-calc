@@ -73,8 +73,10 @@ class DigitArray {
     })
 
     // correct for cursor offset
-    this.cursorIndex += cursorOffset;
-    this.inputIndex += cursorOffset;
+    while (cursorOffset < 0) {
+      this.decrementCursor();
+      cursorOffset++;
+    }
   }
 
   // clears the contents of the display and current formula
