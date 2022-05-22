@@ -1,7 +1,7 @@
 import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
 import { Errors } from "../../vs-common/vs-logger.js";
-import { Cell } from "./cell.js";
+import { Utilities } from "../../utilities.js";
 
 class DigitArray {
   node;
@@ -27,17 +27,39 @@ class DigitArray {
     this.node.id = id;
 
     this.clear();
-    this.addCursor()
-  }
-
-  // replaces the node at {index} with {digit}
-  setDigit(digit, index) {
-
   }
 
   // removes the digit or decimal immediately preceding the cursor
   backspace() {
+    if (this.inputIndex !== 0) {
 
+      this.input = this.input.slice(0, this.inputIndex - 1) + this.input.slice(this.inputIndex);
+      this.inputIndex = Utilities.clamp(this.inputIndex - 1, 0, this.input.length);
+
+      if (this.cursorIndex === 0) return;
+
+      let referenceCell = this.node.childNodes[this.cursorIndex];
+
+      if (referenceCell !== this.node.firstChild) {
+        referenceCell.previousSibling.remove();
+        referenceCell.previousSibling.remove();
+      }
+  
+      this.cursorIndex = Utilities.clamp(this.cursorIndex - 2, 0, this.cellCount);
+  
+      let inputOffset = this.inputIndex + ((this.cellCount - this.cursorIndex) / 2);
+      if (this.input.length > inputOffset) {
+        this.node.append(CellArray.getDecimalArray(this.input[inputOffset] == '.' ? true : false));
+        if (inputOffset < this.input.length) {
+          this.node.append(CellArray.getCellArray(this.input[inputOffset]));
+        } else {
+          this.node.append(CellArray.getEmptyArray());
+        }
+      } else {
+        this.node.append(CellArray.getDecimalArray(false));
+        this.node.append(CellArray.getEmptyArray());
+      }
+    }
   }
 
   // sets the display to digitString
@@ -93,6 +115,8 @@ class DigitArray {
       this.node.append(CellArray.getDecimalArray(false));
       this.node.append(CellArray.getEmptyArray());
     }
+
+    this.addCursor()
   }
 
   // increments cursor position
