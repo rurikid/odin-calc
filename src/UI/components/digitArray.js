@@ -2,6 +2,7 @@ import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
 import { Errors } from "../../vs-common/vs-logger.js";
 import { Utilities } from "../../utilities.js";
+import { Cell } from "./cell.js";
 
 class DigitArray {
   node;
@@ -32,13 +33,12 @@ class DigitArray {
   // removes the digit or decimal immediately preceding the cursor
   backspace() {
     if (this.inputIndex !== 0) {
+      let referenceCell = this.node.childNodes[this.cursorIndex];
 
       this.input = this.input.slice(0, this.inputIndex - 1) + this.input.slice(this.inputIndex);
       this.inputIndex = Utilities.clamp(this.inputIndex - 1, 0, this.input.length);
 
       if (this.cursorIndex === 0) return;
-
-      let referenceCell = this.node.childNodes[this.cursorIndex];
 
       if (referenceCell !== this.node.firstChild) {
         referenceCell.previousSibling.remove();
@@ -70,12 +70,21 @@ class DigitArray {
 
   // appends {digit} at {index}
   insert(digits, cursorOffset = 0) {
-    // get reference node
-    let referenceCell = this.node.childNodes[this.cursorIndex];
 
     // needs to replace item at current index
     digits.split('').forEach(digit => {
-      // TODO: condition for decimal
+      if (digit === '.') {
+        this.insertDecimal();
+        return;
+      }
+
+      // if (digit === '_') {
+      //   this.insertSign();
+      //   return;
+      // }
+
+      // get reference node
+      let referenceCell = this.node.childNodes[this.cursorIndex];
 
       // insert before reference node, cell + decimal
       referenceCell.before(CellArray.getCellArray(digit));
@@ -89,9 +98,6 @@ class DigitArray {
 
       // increment cursor
       this.incrementCursor();
-
-      // update reference node
-      referenceCell = this.node.childNodes[this.cursorIndex];
     })
 
     // correct for cursor offset
@@ -99,6 +105,25 @@ class DigitArray {
       this.decrementCursor();
       cursorOffset++;
     }
+  }
+
+  insertDecimal() {
+    let referenceCell = this.node.childNodes[this.cursorIndex].previousSibling;
+    referenceCell.replaceWith(CellArray.getDecimalArray(
+      referenceCell.id === "decimal" ? false : true
+    ));
+
+    this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
+    this.inputIndex++;
+  }
+
+  insertSign() {
+    let referenceCell = this.node.childNodes[this.cursorIndex];
+    
+  }
+
+  getInputGroup() {
+
   }
 
   // clears the contents of the display and current formula
@@ -190,7 +215,7 @@ class DigitArray {
 
       // decrement cursor
       this.cursorIndex = Math.max(this.cursorIndex - 2, 0);
-      
+
       this.addCursor();
     }
   }
@@ -203,6 +228,7 @@ class DigitArray {
 
       if (this.input[this.inputIndex] === '.') {
         this.node.firstChild.before(CellArray.getDecimalArray(true));
+        this.inputIndex--;
       } else {
         this.node.firstChild.before(CellArray.getDecimalArray(false));
       }

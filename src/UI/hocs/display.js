@@ -42,6 +42,12 @@ class Display {
       case 'rightArrow':
         this.input.incrementCursor();
         break;
+      case 'plusMinus':
+        this.input.insertSign();
+        break;
+      case 'decimal':
+        this.input.insertDecimal();
+        break;
       default:
         this.input.insert(key.input, key.inputOffset);
     }
