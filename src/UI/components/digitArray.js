@@ -2,7 +2,6 @@ import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
 import { Errors } from "../../vs-common/vs-logger.js";
 import { Utilities } from "../../utilities.js";
-import { Cell } from "./cell.js";
 
 class DigitArray {
   node;
@@ -30,10 +29,34 @@ class DigitArray {
     this.clear();
   }
 
+  // TODO: backspace on shift left decimal, should shift left and remove decimal, cursor steady
   // removes the digit or decimal immediately preceding the cursor
   backspace() {
     if (this.inputIndex !== 0) {
       let referenceCell = this.node.childNodes[this.cursorIndex];
+
+      console.log(this.input[this.inputIndex]);
+
+      // backspace on decimal should only remove decimal
+      if (this.input[this.inputIndex - 1] === '.') {
+
+        if (referenceCell !== this.node.firstChild) {
+          referenceCell.previousSibling.replaceWith(CellArray.getDecimalArray(false));
+        }
+
+        this.input = this.input.slice(0, this.inputIndex - 1) + this.input.slice(this.inputIndex);
+        this.inputIndex = Utilities.clamp(this.inputIndex - 1, 0, this.input.length);
+
+        // when decimal is first digit off screen
+        // remove decimal, reveal next digit
+        if (this.cursorIndex == 0) {
+          this.inputIndex = Utilities.clamp(this.inputIndex - 1, 0, this.input.length);
+          this.shiftLeft();
+          this.cursorIndex = this.cursorIndex + 2;
+        }
+
+        return;
+      }
 
       this.input = this.input.slice(0, this.inputIndex - 1) + this.input.slice(this.inputIndex);
       this.inputIndex = Utilities.clamp(this.inputIndex - 1, 0, this.input.length);
@@ -206,8 +229,13 @@ class DigitArray {
   // decrements cursor position
   decrementCursor() {
     if (this.inputIndex > 0) {
+      console.log(this.input[this.inputIndex]);
+
       // decrement input
-      this.inputIndex--;
+      if (this.input[this.inputIndex - 1] === '.') {
+        this.inputIndex--;
+      }
+      this.inputIndex = Math.max(this.inputIndex - 1, 0);
 
       this.removeCursor();
 
@@ -225,7 +253,7 @@ class DigitArray {
     if (this.cursorIndex === 0) {
       this.node.lastChild.remove();
       this.node.lastChild.remove();
-
+      console.log(`shift: ${this.input[this.inputIndex]}`);
       if (this.input[this.inputIndex] === '.') {
         this.node.firstChild.before(CellArray.getDecimalArray(true));
         this.inputIndex--;
