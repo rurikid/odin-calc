@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Iceland&display');
+
 :root {
   --black: #161616;
   --gray: #646464;
@@ -57,6 +59,23 @@ footer a:hover {
   justify-items: flex-end;
   align-content: flex-end;
   align-items: flex-end;
+}
+
+.header {
+  width: 100%;
+}
+
+.vs-header {
+  width: 100%;
+  justify-content: space-between;
+  padding: .5rem;
+  margin-bottom: 5px;
+  font-size: 2rem;
+  font-family: 'Iceland';
+}
+
+.vs-header-container {
+  width: 100%;
 }
 
 .trident {

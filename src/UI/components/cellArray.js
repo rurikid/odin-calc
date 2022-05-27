@@ -16,6 +16,7 @@ class CellArray {
   {
     let decimalArray = document.createElement("div");
     decimalArray.className = "flex-column flex-end cell-space";
+    decimalArray.id = "decimal";
     let cell = Cell.getCell(isEnabled, true);
     decimalArray.appendChild(cell);
     decimalArray.setAttribute("id", isEnabled ? "decimal" : "");
