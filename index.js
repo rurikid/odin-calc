@@ -2,6 +2,9 @@ import { Keyboard } from "./src/ui/hocs/keyboard.js";
 import { Controls } from "./src/controls.js"; 
 import { Display } from "./src/ui/hocs/display.js";
 import { ExpressionTokenizer } from "./src/utilities/ExpressionTokenizer.js";
+import { VSHeader } from "./src/vs-common/vs-header.js";
+
+document.getElementById("header").appendChild(VSHeader.render());
 
 let canvas = document.getElementById("canvas");
 let display = new Display();
