@@ -3,7 +3,7 @@ class VSHeader {
     let container = document.createElement("div");
     
     container.className = "flex-center flex-row vs-header"
-    container.innerHTML = `<p style="color:red">Odin-Calc</p>
+    container.innerHTML = `<p>Odin-Calc</p>
     <p><img class="trident" src="./images/vs.svg" /></p>`
 
     return container; 
