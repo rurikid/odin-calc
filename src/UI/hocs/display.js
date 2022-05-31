@@ -1,6 +1,7 @@
 import { Constants } from "../../constants.js";
 import { DigitArray } from "../components/digitArray.js";
 import { DisplayAlign } from "../../enums/displayAlign.js";
+import { ExpressionTokenizer } from "../../utilities/ExpressionTokenizer.js";
 
 class Display {
   node;
@@ -25,12 +26,16 @@ class Display {
 
   // TODO: left after enter needs to scroll through previous expression start at last index
   // TODO: right after enter needs to scroll through previous expression start at first index
-  // TODO: still an issue with scrolling decimals
+  // TODO: issue with scrolling decimals
+  // TODO: +/- toggle
+  // TODO: one decimal per literal
+  // TODO: 0 should prepend decimal if literal does not preceed cursor
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
-        let result = this.calculate();
-        this.output.setDisplay(this.input.input);
+        let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
+        result = result.toString();
+        this.output.setDisplay(result);
         break;
       case 'backspace':
         this.input.backspace();

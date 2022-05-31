@@ -38,10 +38,13 @@ class ExpressionTokenizer {
         token = ExpressionToken();
       }
 
-      if (this.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); }
-      if (this.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); }
-      if (this.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); }
+      if (this.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); return; }
+      if (this.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); return; }
+      if (this.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); return; }
+
     });
+
+    tokens.push(token);
 
     return tokens;
   }
