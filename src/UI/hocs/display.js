@@ -23,6 +23,9 @@ class Display {
 
   }
 
+  // TODO: left after enter needs to scroll through previous expression start at last index
+  // TODO: right after enter needs to scroll through previous expression start at first index
+  // TODO: still an issue with scrolling decimals
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
