@@ -1,7 +1,7 @@
 import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
 import { Errors } from "../../vs-common/vs-logger.js";
-import { Utilities } from "../../utilities.js";
+import { Utilities } from "../../utilities/utilities.js";
 
 class DigitArray {
   node;
@@ -101,11 +101,6 @@ class DigitArray {
         return;
       }
 
-      // if (digit === '_') {
-      //   this.insertSign();
-      //   return;
-      // }
-
       // get reference node
       let referenceCell = this.node.childNodes[this.cursorIndex];
 
@@ -142,11 +137,9 @@ class DigitArray {
 
   insertSign() {
     let referenceCell = this.node.childNodes[this.cursorIndex];
+    if (!Utilities.isLiteral(this.input[this.inputIndex - 1])) this.insert('_');
+
     
-  }
-
-  getInputGroup() {
-
   }
 
   // clears the contents of the display and current formula
@@ -201,8 +194,8 @@ class DigitArray {
   }
 
   // shifts the digit array one digit right
-  shiftRight() {
-    if (this.cursorIndex === this.cellCount) {
+  shiftRight(force = false) {
+    if (this.cursorIndex === this.cellCount || force) {
       
       // scroll right
       this.node.firstChild.remove();
@@ -262,6 +255,42 @@ class DigitArray {
       }
 
       this.node.firstChild.before(CellArray.getCellArray(this.input[this.inputIndex]));
+    }
+  }
+  
+  // shifts left to fit errors
+  errorShift() {
+    this.node.lastChild.remove();
+    this.node.lastChild.remove();
+    this.node.firstChild.before(CellArray.getDecimalArray(false));
+    this.node.firstChild.before(CellArray.getCellArray(this.input[0]));
+  }
+
+  // sets the calculation result to right side
+  setResult(result) {
+    this.input = result;
+    this.node.innerHTML = '';
+    
+    result.split('').forEach((digit, index) => {
+      if (index === 0 && digit !== '.') {
+        this.node.appendChild(CellArray.getCellArray(digit));
+        return;
+      }
+      
+      if (digit === '.') {
+        this.node.appendChild(CellArray.getDecimalArray(true));
+        return;
+      }
+      
+      if (result[index - 1] !== '.') {
+        this.node.appendChild(CellArray.getDecimalArray(false));
+      }
+      this.node.appendChild(CellArray.getCellArray(digit));
+    });
+
+    while (this.node.children.length < this.cellCount) {
+      this.node.firstChild.before(CellArray.getDecimalArray(false));
+      this.node.firstChild.before(CellArray.getEmptyArray());
     }
   }
 }

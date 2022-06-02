@@ -1,7 +1,7 @@
 import { Constants } from "../../constants.js";
 import { DigitArray } from "../components/digitArray.js";
 import { DisplayAlign } from "../../enums/displayAlign.js";
-import { ExpressionTokenizer } from "../../utilities/ExpressionTokenizer.js";
+import { ExpressionTokenizer, ExpressionErrors } from "../../utilities/expressionTokenizer.js";
 
 class Display {
   node;
@@ -30,12 +30,43 @@ class Display {
   // TODO: +/- toggle
   // TODO: one decimal per literal
   // TODO: 0 should prepend decimal if literal does not preceed cursor
+  // TODO: cursor stops after enter
+  // TODO: after enter, basic operators prepend Lastx
+  // TODO: output should be right aligned on result; left aligned on error
+  // TODO: Overflow should flash before returning to previous state
+  // TODO: e notation should always append with decimal
+  // TODO: 
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
-        let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
-        result = result.toString();
-        this.output.setDisplay(result);
+        try {
+          if (this.input.input === '') { this.output.setResult('0'); return; };
+
+          let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
+
+          if (!isFinite(result)) throw ExpressionErrors.overflow;
+
+          let resultSplit = result.toString().split('e');
+          if (resultSplit.length > 1) {
+            resultSplit[1] = parseInt(resultSplit[1]) > 0 ? // only negative shows sign
+              resultSplit[1].slice(1) : resultSplit[1];
+          }
+
+          if (result.toString().length > Constants.DigitCount) {
+            let hasDecimal = result.toString().split('.').length > 1;
+
+            result = `${resultSplit[0]
+              .slice(0, Constants.DigitCount - resultSplit[0].length - resultSplit[1].toString().length - (hasDecimal ? 0 : 1))}e${resultSplit[1]}`;
+          } else if (resultSplit.length > 1) {
+            result = resultSplit[0] + '.e' + resultSplit[1];
+          }
+
+          result = result.toString().replace('-', '_'); // necessary for characterBit conversion
+          this.output.setResult(result.toString());
+        } catch (error) {
+          this.output.setDisplay(error);
+          if (error.length >= Constants.DigitCount - 2) { this.output.errorShift(); }
+        }
         break;
       case 'backspace':
         this.input.backspace();
@@ -45,9 +76,11 @@ class Display {
         this.output.clear();
         break;
       case 'leftArrow':
+        this.output.clear();
         this.input.decrementCursor();
         break;
       case 'rightArrow':
+        this.output.clear();
         this.input.incrementCursor();
         break;
       case 'plusMinus':

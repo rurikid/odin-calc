@@ -1,3 +1,5 @@
+import { Utilities } from './utilities.js';
+
 class ExpressionTokenizer {
    
   static GetTokens(input) {
@@ -8,7 +10,7 @@ class ExpressionTokenizer {
 
     input.split('').forEach(char => {
 
-      if (this.isLiteral(char)) {
+      if (Utilities.isLiteral(char)) {
         if (token.type === undefined) {
           token = ExpressionToken(TokenTypes.literal, char === '_' ? '-' : char);
         } else if (token.type === TokenTypes.function) {
@@ -19,7 +21,7 @@ class ExpressionTokenizer {
         }
         return;
       }
-      else if (this.isLetter(char)) { 
+      else if (Utilities.isLetter(char)) { 
         if (token.type === undefined) {
           token = ExpressionToken(TokenTypes.function, char);
         } else if (token.type === TokenTypes.function) {
@@ -38,14 +40,14 @@ class ExpressionTokenizer {
         token = ExpressionToken();
       }
 
-      if (this.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); return; }
-      if (this.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); return; }
-      if (this.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); return; }
+      if (Utilities.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); return; }
+      if (Utilities.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); return; }
+      if (Utilities.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); return; }
 
     });
 
     tokens.push(token);
-
+    console.log(tokens);
     return tokens;
   }
 
@@ -125,10 +127,14 @@ class ExpressionTokenizer {
   }
 
   static operate(lhs, operator, rhs) {
+    console.log(parseFloat(lhs.value));
+    console.log(Math.pow(parseFloat(lhs.value), parseFloat(rhs.value)));
     let result;
     switch(operator.value) {
       case '^':
-        result = Math.pow(parseFloat(lhs.value), parseFloat(rhs.value));
+        result = parseFloat(lhs.value) > 0 ?
+          Math.pow(parseFloat(lhs.value), parseFloat(rhs.value)) :
+          -Math.pow(-parseFloat(lhs.value), parseFloat(rhs.value));
         break;
       case '÷':
         if (rhs.value === '0') throw ExpressionErrors.divideByZero;
@@ -175,16 +181,6 @@ class ExpressionTokenizer {
     }
     return ExpressionToken(TokenTypes.literal, result);
   }
-
-  static isLiteral = (char) => /\d|_|\./.test(char);
-
-  static isOperator = (char) => /÷|\*|\+|-|\^/.test(char);
-
-  static isLetter = (char) => /[a-z]/i.test(char);
-
-  static isRightParenthesis = (char) => char === ')';
-
-  static isLeftParenthesis = (char) => char === '(';
 }
 
 const ExpressionToken = (type, value) => ({ type: type, value: value })
@@ -204,4 +200,4 @@ const TokenTypes = {
   function: 'Function'
 }
 
-export { ExpressionTokenizer, ExpressionToken };
+export { ExpressionTokenizer, ExpressionToken, ExpressionErrors };
