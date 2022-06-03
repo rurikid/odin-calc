@@ -126,13 +126,39 @@ class DigitArray {
   }
 
   insertDecimal() {
-    let referenceCell = this.node.childNodes[this.cursorIndex].previousSibling;
-    referenceCell.replaceWith(CellArray.getDecimalArray(
-      referenceCell.id === "decimal" ? false : true
-    ));
+    let referenceCell = this.node.childNodes[this.cursorIndex];
 
-    this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
-    this.inputIndex++;
+    for (let i = this.inputIndex - 1; i >= 0; i--) {
+      if (this.input[i] === '.') return;
+      if (!Utilities.isLiteral(this.input[i])) {
+        break;
+      }
+    }
+
+    if (this.cursorIndex === 0 && this.inputIndex !== 0) {
+      this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
+      this.inputIndex++;
+      return;
+    }
+
+    if (!Utilities.isLiteral(this.input[this.inputIndex - 1])) {
+      this.node.lastChild.remove();
+      this.node.lastChild.remove();
+      if (this.cursorIndex === 0) {
+        this.node.firstChild.before(CellArray.getDecimalArray(true));
+        this.node.firstChild.before(CellArray.getCellArray('0'));
+      } else {
+        referenceCell.before(CellArray.getCellArray('0'));
+        referenceCell.before(CellArray.getDecimalArray(true));
+      }
+      this.input = this.input.slice(0, this.inputIndex) + '0.' + this.input.slice(this.inputIndex);
+      this.inputIndex += 2;
+      this.cursorIndex += 2;
+    } else {
+      referenceCell.previousSibling.replaceWith(CellArray.getDecimalArray(true));
+      this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
+      this.inputIndex++;
+    }
   }
 
   insertSign() {
@@ -163,6 +189,12 @@ class DigitArray {
   // increments cursor position
   incrementCursor() {
     if (this.inputIndex < this.input.length) {
+      // increment for decimal
+      if (this.input[this.inputIndex + 1] === '.'
+        && this.cursorIndex != this.cellCount) {
+        this.inputIndex++;
+      }
+
       // increment input
       this.inputIndex++;
 
@@ -225,7 +257,8 @@ class DigitArray {
       console.log(this.input[this.inputIndex]);
 
       // decrement input
-      if (this.input[this.inputIndex - 1] === '.') {
+      if (this.input[this.inputIndex - 1] === '.' &&
+        this.cursorIndex !== 0) {
         this.inputIndex--;
       }
       this.inputIndex = Math.max(this.inputIndex - 1, 0);
@@ -272,6 +305,7 @@ class DigitArray {
     this.node.innerHTML = '';
     
     result.split('').forEach((digit, index) => {
+      if (index === result.length - 1 && digit === '.') return;
       if (index === 0 && digit !== '.') {
         this.node.appendChild(CellArray.getCellArray(digit));
         return;
@@ -291,6 +325,31 @@ class DigitArray {
     while (this.node.children.length < this.cellCount) {
       this.node.firstChild.before(CellArray.getDecimalArray(false));
       this.node.firstChild.before(CellArray.getEmptyArray());
+    }
+  }
+
+  alignDisplay(align) {
+    if (align === DisplayAlign.Left) {
+      while (this.inputIndex !== 0) {
+        this.decrementCursor();
+      }
+    } else if (align === DisplayAlign.Right) {
+      while(this.inputIndex !== this.input.length) {
+        this.incrementCursor();
+      }
+    }
+  }
+
+  // sets the cursor to the indicated; clamps to allowable range
+  setCursor(index) {
+    index = Utilities.clamp(index, 0, this.digitCount) * 2;
+
+    if (index === this.cursorIndex) return;
+
+    if (index < this.cursorIndex) {
+      while (index < this.cursorIndex) this.decrementCursor();
+    } else {
+      while (index > this.cursorIndex) this.incrementCursor();
     }
   }
 }
