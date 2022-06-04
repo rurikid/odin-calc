@@ -46,9 +46,82 @@ class ExpressionTokenizer {
 
     });
 
-    tokens.push(token);
+    if (token.value !== undefined) {
+      tokens.push(token);
+    }
+
     console.log(tokens);
+    
+    this.evaluateSyntax(tokens);
+    
     return tokens;
+  }
+
+  static evaluateSyntax(tokens) {
+    if (tokens.length <= 1 && tokens[0].type !== TokenTypes.literal) throw ExpressionErrors.syntaxError;
+    if (tokens.length === 2) throw ExpressionErrors.syntaxError;
+
+    tokens.forEach((token, index) => {
+      if (index === 0) {
+        switch(token.type) {
+          case TokenTypes.rightParenthesis:
+          case TokenTypes.operator:
+            throw ExpressionErrors.syntaxError;
+        }
+      } else if (index === tokens.length - 1) {
+        switch(token.type) {
+          case TokenTypes.leftParenthesis:
+          case TokenTypes.function:
+          case TokenTypes.operator:
+            throw ExpressionErrors.syntaxError;
+        }
+      } else if (index !== 0 && index !== tokens.length - 1) {
+        let backType = tokens[index - 1].type;
+        let foreType = tokens[index + 1].type;
+        
+        switch(token.type) {
+          case TokenTypes.function:
+            if (backType === TokenTypes.rightParenthesis ||
+              backType === TokenTypes.literal ||
+              backType === TokenTypes.function ||
+              foreType !== TokenTypes.leftParenthesis) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.leftParenthesis:
+            if (backType === TokenTypes.rightParenthesis ||
+              backType === TokenTypes.literal ||
+              foreType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.operator) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.rightParenthesis:
+            if (backType === TokenTypes.function ||
+              backType === TokenTypes.leftParenthesis ||
+              backType === TokenTypes.operator ||
+              foreType === TokenTypes.function ||
+              foreType === TokenTypes.leftParenthesis ||
+              foreType === TokenTypes.literal) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.literal:
+            if (backType === TokenTypes.literal ||
+              backType === TokenTypes.function ||
+              backType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.literal ||
+              foreType === TokenTypes.function ||
+              foreType === TokenTypes.leftParenthesis) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.operator:
+            if (backType === TokenTypes.function ||
+              backType === TokenTypes.leftParenthesis ||
+              backType === TokenTypes.operator ||
+              foreType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.operator) throw ExpressionErrors.syntaxError;
+            break;
+        }
+      }
+    });
   }
 
   static evaluate(tokens) {

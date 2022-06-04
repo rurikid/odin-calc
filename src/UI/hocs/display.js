@@ -7,11 +7,15 @@ class Display {
   node;
   input;
   output;
+  hadError;
+  lastInput;
 
   constructor() {
     this.node = document.createElement('div');
     this.node.id = 'display';
     this.node.className = 'flex-column display';
+    this.error = '';
+    this.lastInput = '';
 
     this.input = new DigitArray('input', Constants.DigitCount, new DisplayAlign(DisplayAlign.Left));
     this.output = new DigitArray('results', Constants.DigitCount, new DisplayAlign(DisplayAlign.Right));
@@ -24,24 +28,32 @@ class Display {
   // TODO: keypad input
   // TODO: +/- toggle
   // TODO: one decimal per literal; need forward looking
-  // TODO: 0 should prepend decimal if literal does not preceed cursor
   // TODO: after enter, basic operators prepend Lastx
-  // TODO: SSYNTAX ERROR
-  // TODO: Syntax Error Cases
-  // TODO: Syntax Errors Resolve before other errors
-  // TODO: On Enter, input scrolls to first inputIndex
+  // TODO: Fix period styling
+  // TODO: Enter on Error returns to previous input
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
         try {
+          // if error displayed
+          if (this.hadError) {
+            this.hadError = false;
+            this.output.clear();
+            this.input.setDisplay(this.lastInput);
+            return;
+          }
+
           this.input.removeCursor();
           if (this.input.input === '') { this.output.setResult('0'); return; };
 
           let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
 
           this.output.setResult(this.formatResult(result));
+          this.input.alignDisplay(DisplayAlign.Left);
+          this.input.removeCursor();
         } catch (error) {
-          let input = this.input.input;
+          this.hadError = true;
+          this.lastInput = this.input.input;
           
           this.input.clear();
           this.input.removeCursor();
@@ -49,11 +61,12 @@ class Display {
           this.output.setDisplay(error);
           
           if (error === ExpressionErrors.overflow) setTimeout(() => {
-            this.input.setDisplay(input);
+            this.input.setDisplay(lastInput);
             this.output.setResult(this.formatResult(Number.MAX_VALUE));
           }, 1000);
           
-          if (error.length >= Constants.DigitCount - 2) { this.output.errorShift(); }
+          this.output.alignDisplay(DisplayAlign.Left);
+          this.output.removeCursor();
         }
         break;
       case 'backspace':

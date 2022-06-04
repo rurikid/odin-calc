@@ -11,4 +11,5 @@ canvas.appendChild(display.node);
 let controls = new Controls(display);
 canvas.appendChild(Keyboard.getKeyboard(controls.Keys));
 
-display.input.setDisplay("_100.1^100");
+display.input.setDisplay("_100.1^1000000");
+display.input.deleteIndex(3);

@@ -29,7 +29,6 @@ class DigitArray {
     this.clear();
   }
 
-  // TODO: backspace on shift left decimal, should shift left and remove decimal, cursor steady
   // removes the digit or decimal immediately preceding the cursor
   backspace() {
     if (this.inputIndex !== 0) {
@@ -134,6 +133,12 @@ class DigitArray {
         break;
       }
     }
+    for (let i = this.inputIndex + 1; i < this.input.length; i++) {
+      if (this.input[i] === '.') return;
+      if (!Utilities.isLiteral(this.input[i])) {
+        break;
+      }
+    }
 
     if (this.cursorIndex === 0 && this.inputIndex !== 0) {
       this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
@@ -161,11 +166,73 @@ class DigitArray {
     }
   }
 
+  // inserts a sign in place or toggles if within literal
   insertSign() {
-    let referenceCell = this.node.childNodes[this.cursorIndex];
-    if (!Utilities.isLiteral(this.input[this.inputIndex - 1])) this.insert('_');
+    if (this.insertIndex === 0) this.insert('_');
+    if (this.input[this.inputIndex === '_']) {
+      
+    } 
 
-    
+    let cursorIndex = this.cursorIndex;
+    let referenceCursor = this.cursorIndex;
+    if (Utilities.isLiteral(this.input[this.inputIndex - 1])) {
+      for (let i = this.inputIndex; i >= 0; i--) {
+        referenceCursor = Math.max(referenceCursor - 2, 0);
+
+        // if finds _ => toggle
+        if (this.input[i] === '_') {
+          this.input = this.input.slice(0, i) + (this.input.slice(i + 1));
+          if (referenceCursor >= 0) {
+            this.cursorIndex = referenceCursor + 1;
+            this.backspace();
+            this.cursor = cursorIndex;
+          }
+        }
+
+        // if finds i = 0 => turn on
+
+        // if finds !literal => turn on
+
+      }
+    } else {
+      this.insert('_');
+    }
+  }
+
+  deleteIndex(cellIndex) {
+    cellIndex = Utilities.clamp(cellIndex, 0, this.cellCount);
+    this.node.children[cellIndex].remove();
+    this.node.children[cellIndex].remove();
+
+    // 01234567890123456789
+          // |      ^      |
+          //   ^
+
+            // ci = 2    II = 7 CI = 14 
+// ii to remove = 5
+    let inputIndex = this.inputIndex - (this.cursorIndex / 2) - cellIndex;
+    // let inputIndex = this.inputIndex - this.input.length + cellIndex - this.digitCount;
+    // this.inputIndex - cellIndex + this.digitCount;
+
+    // scroll input digit
+    let inputScroll = this.inputIndex - (this.cellCount - this.cursorIndex) / 2;
+    if (inputScroll < this.input.length)
+    {
+      // case for decimal
+      if (this.input[inputScroll] == '.') {
+        this.node.append(CellArray.getDecimalArray(true));
+        this.inputScroll++;
+      } else {
+        this.node.append(CellArray.getDecimalArray(false));
+      }
+      this.node.append(CellArray.getCellArray(this.input[this.inputScroll]));
+    } else {
+      this.node.append(CellArray.getDecimalArray(false));
+      this.node.append(CellArray.getEmptyArray());
+    }
+
+    this.input = this.input.slice(0, inputIndex - 1) + this.input.slice(inputIndex);
+    this.inputIndex--;
   }
 
   // clears the contents of the display and current formula
@@ -337,19 +404,6 @@ class DigitArray {
       while(this.inputIndex !== this.input.length) {
         this.incrementCursor();
       }
-    }
-  }
-
-  // sets the cursor to the indicated; clamps to allowable range
-  setCursor(index) {
-    index = Utilities.clamp(index, 0, this.digitCount) * 2;
-
-    if (index === this.cursorIndex) return;
-
-    if (index < this.cursorIndex) {
-      while (index < this.cursorIndex) this.decrementCursor();
-    } else {
-      while (index > this.cursorIndex) this.incrementCursor();
     }
   }
 }
