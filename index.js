@@ -1,4 +1,4 @@
-import { Keyboard } from "/src/ui/hocs/keyboard.js";
+import { Keyboard } from "./src/ui/hocs/keyboard.js";
 import { Controls } from "./src/controls.js"; 
 import { Display } from "./src/ui/hocs/display.js";
 import { VSHeader } from "./src/vs-common/vs-header.js";
