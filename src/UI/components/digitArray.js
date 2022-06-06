@@ -1,6 +1,5 @@
 import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
-import { Errors } from "../../vs-common/vs-logger.js";
 import { Utilities } from "../../utilities/utilities.js";
 
 class DigitArray {
