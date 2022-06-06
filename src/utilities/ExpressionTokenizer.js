@@ -9,6 +9,12 @@ class ExpressionTokenizer {
     input.split('').forEach(char => {
 
       if (Utilities.isLiteral(char)) {
+        if (char === '_') {
+          tokens.push(ExpressionToken(TokenTypes.literal, '-1'));
+          tokens.push(ExpressionToken(TokenTypes.operator, '*'));
+          token = ExpressionToken();
+          return;
+        }
         if (token.type === undefined) {
           token = ExpressionToken(TokenTypes.literal, char === '_' ? '-' : char);
         } else if (token.type === TokenTypes.function) {
@@ -121,38 +127,81 @@ class ExpressionTokenizer {
   }
 
   static evaluate(tokens) {
-    // error cases
-    if ((tokens[0].type === TokenTypes.function &&
-      tokens[1].type !== TokenTypes.leftParenthesis) ||
-      tokens[0].type === TokenTypes.operator) throw ExpressionErrors.syntaxError;
-    
     // recursion end cases
     if (tokens.length === 0) return ExpressionToken[TokenTypes.literal, 0];
     if (tokens.length === 1 &&
       tokens[0].type === TokenTypes.literal) return tokens[0];
 
-    // first element function or group
-    if (tokens[0].type === TokenTypes.rightParenthesis) return ExpressionToken[TokenTypes.literal, 0];
-    if (tokens[0].type === TokenTypes.function) {
-      tokens = this.evaluateFunction(tokens);
+    // GEMS
+    tokens = this.operateGroupsAndFunctions(tokens);
+    tokens = this.operateExponents(tokens);
+    tokens = this.operateMultiplyDivide(tokens);
+    tokens = this.operateSubtractionAddition(tokens);
+
+    return tokens;
+  }
+
+  static operateGroupsAndFunctions(tokens) {
+    // recursion end cases
+    if (tokens.length === 0) return ExpressionToken[TokenTypes.literal, 0];
+    if (tokens.length === 1 &&
+      tokens[0].type === TokenTypes.literal) return tokens[0];
+
+    // Groups
+    // searching for functions & groups
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].type === TokenTypes.function) {
+        return this.evaluate([...tokens.slice(0, i), ...this.evaluateFunction(tokens.slice(i))]);
+      }
+      if (tokens[i].type === TokenTypes.leftParenthesis) {
+        return this.evaluate([...tokens.slice(0, i), ...this.evaluateGroup(tokens.slice(i))]);
+      }
     }
-    if (tokens[0].type === TokenTypes.leftParenthesis) {
-      tokens = this.evaluateGroup(tokens);
+
+    return tokens;
+  }
+
+  static operateExponents(tokens) {
+    // recursion end cases
+    if (tokens.length === 0) return ExpressionToken[TokenTypes.literal, 0];
+    if (tokens.length === 1 &&
+      tokens[0].type === TokenTypes.literal) return tokens[0];
+
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].value === '^') {
+        return this.evaluate([...tokens.slice(0, i - 1), ...this.operateGroup(tokens)]);
+      }
     }
+
+    return tokens;
+  }
+  
+  static operateMultiplyDivide(tokens) {
+    // recursion end cases
+    if (tokens.length === 0) return ExpressionToken[TokenTypes.literal, 0];
+    if (tokens.length === 1 &&
+      tokens[0].type === TokenTypes.literal) return tokens[0];
+
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].value === "*" ||
+        tokens[i].value === "÷") return this.evaluate([...tokens.slice(0, i - 1), ...this.operateGroup(tokens.slice(i - 1))]);
+    };
+
+    return tokens;
+  }
     
-    // evaluate literal + operator + (literal/function/group);
-    if (tokens[0].type === TokenTypes.literal && tokens[1].type === TokenTypes.operator) {
-      if (tokens.length > 3 && tokens[2].type === TokenTypes.literal &&
-        tokens[3].value === "^") {
-          tokens = [...tokens.slice(0, 2), ...this.operateGroup(tokens.slice(2))];
-        } else {
-          tokens = this.operateGroup(tokens);
-        }
+  static operateSubtractionAddition(tokens) {
+    // recursion end cases
+    if (tokens.length === 0) return ExpressionToken[TokenTypes.literal, 0];
+    if (tokens.length === 1 &&
+      tokens[0].type === TokenTypes.literal) return tokens[0];
 
-      return this.evaluate(tokens);
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].value === "+" ||
+        tokens[i].value === "-") return this.evaluate([...tokens.slice(0, i - 1), ...this.operateGroup(tokens.slice(i - 1))]);
     }
 
-    return tokens[0];
+    return tokens;
   }
 
   static operateGroup(tokens) {
@@ -181,7 +230,7 @@ class ExpressionTokenizer {
 
   static evaluateFunction(tokens) {
     let closeIndex = this.getClosingGroupIndex(tokens.slice(1));
-    let functionResultToken = this.performFunction(tokens[0].value, tokens.slice(2, closeIndex + 1)); // +1 for sliced function
+    let functionResultToken = this.performFunction(tokens[0].value, this.evaluate(tokens.slice(2, closeIndex + 1))); // +1 for sliced function
     return [functionResultToken, ...tokens.slice(closeIndex + 2)];
   }
 

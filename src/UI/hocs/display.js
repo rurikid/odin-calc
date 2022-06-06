@@ -26,9 +26,7 @@ class Display {
 
   // TODO: clicking sound?
   // TODO: keypad input
-  // TODO: after enter, basic operators prepend Lastx
-  // TODO: Fix period styling
-  // TODO: fix . before e
+  // TODO: - ==> -1 *// TODO: after enter, basic operators prepend Lastx
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
@@ -46,7 +44,7 @@ class Display {
 
           let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
 
-          this.output.setResult(this.formatResult(result));
+          this.output.setResult(this.formatResult(parseFloat(result)));
           this.input.alignDisplay(DisplayAlign.Left);
           this.input.removeCursor();
         } catch (error) {
@@ -77,6 +75,7 @@ class Display {
       case 'leftArrow':
         if (this.output.input !== '') {
           this.input.alignDisplay(DisplayAlign.Right);
+          this.input.addCursor();
           this.output.clear();
         }
         this.input.decrementCursor();
@@ -84,6 +83,7 @@ class Display {
       case 'rightArrow':
         if (this.output.input !== '') {
           this.input.alignDisplay(DisplayAlign.Left);
+          this.input.addCursor();
           this.output.clear();
           return;
         }
@@ -104,9 +104,13 @@ class Display {
   // expects float
   formatResult(result) {
     if (!isFinite(result)) throw ExpressionErrors.overflow;
-    if (result.length < Constants.DigitCount) return result.replace('-', '_');
+    if (result.toString().length < Constants.DigitCount) return result.toString().replace('-', '_');
 
     let hasE = result.toString().split('e').length > 1;
+
+    if (!hasE && Math.abs(result) > 0 && Math.abs(result) < 10) {
+      return result.toFixed(result > 0 ? 13 : 12);
+    }
 
     // convert long to e notation
     let absFloatResult = Math.abs(result);
