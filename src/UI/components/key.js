@@ -1,5 +1,3 @@
-'use strict';
-
 class Key {
   static getKey(key) {
     let btn = document.createElement("div");

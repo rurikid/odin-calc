@@ -1,5 +1,5 @@
 const Constants = {
-  DigitCount: 14,
+  DigitCount: 14
 }
 
 export { Constants };
