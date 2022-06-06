@@ -3,8 +3,6 @@ import { Utilities } from './utilities.js';
 class ExpressionTokenizer {
    
   static GetTokens(input) {
-    console.log(input);
-
     let tokens = [];
     let token = ExpressionToken();
 
@@ -50,8 +48,6 @@ class ExpressionTokenizer {
       tokens.push(token);
     }
 
-    console.log(tokens);
-    
     this.evaluateSyntax(tokens);
     
     return tokens;
@@ -200,8 +196,6 @@ class ExpressionTokenizer {
   }
 
   static operate(lhs, operator, rhs) {
-    console.log(parseFloat(lhs.value));
-    console.log(Math.pow(parseFloat(lhs.value), parseFloat(rhs.value)));
     let result;
     switch(operator.value) {
       case '^':

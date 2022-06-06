@@ -26,11 +26,9 @@ class Display {
 
   // TODO: clicking sound?
   // TODO: keypad input
-  // TODO: +/- toggle
-  // TODO: one decimal per literal; need forward looking
   // TODO: after enter, basic operators prepend Lastx
   // TODO: Fix period styling
-  // TODO: Enter on Error returns to previous input
+  // TODO: fix . before e
   keystrokeHandler(key) {
     switch(key.id) {
       case 'enterBtn':
@@ -161,6 +159,8 @@ class Display {
 
       result = `${resultSplit[0]
         .slice(0, Constants.DigitCount - resultSplit[0].length - resultSplit[1].toString().length - (hasDecimal ? 0 : 1))}e${resultSplit[1]}`;
+    } else if (resultSplit.length > 1 && resultSplit[0].split('.').length > 1) {
+      result = resultSplit[0] + 'e' + resultSplit[1];
     } else if (resultSplit.length > 1) {
       result = resultSplit[0] + '.e' + resultSplit[1];
     }
