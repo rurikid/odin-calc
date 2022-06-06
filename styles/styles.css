@@ -60,6 +60,10 @@ body {
   background-color: #16161688;
 }
 
+.operator:active {
+  background-color: #32323288;
+}
+
 .bevel {
   background-color: #16161688;
   border-radius: 0px 0px 5px 5px;
@@ -104,9 +108,11 @@ body {
 .cell-decimal {
   height: var(--decimal-diameter);
   width: var(--decimal-diameter);
-  border-radius: 3px;
-  margin-left: 1px;
-  margin-right: 1px;
+  border-radius: 2px;
+  margin-left: .5px;
+  margin-right: 1.5px;
+  padding-right: 1px;
+  margin-bottom: 1px;
   background-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -158,5 +164,3 @@ body {
 #leftArrow, #rightArrow {
   flex-grow: 1;
 }
-
-/* TODO: Add Btn Click Style */
