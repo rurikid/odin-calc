@@ -10,5 +10,3 @@ let display = new Display();
 canvas.appendChild(display.node);
 let controls = new Controls(display);
 canvas.appendChild(Keyboard.getKeyboard(controls.Keys));
-
-display.input.setDisplay("_3+SIN(4*_1-_COS((42+3)÷5))");
