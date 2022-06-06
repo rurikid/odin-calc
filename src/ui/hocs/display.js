@@ -1,7 +1,7 @@
 import { Constants } from "../../constants.js";
 import { DigitArray } from "../components/digitArray.js";
 import { DisplayAlign } from "../../enums/displayAlign.js";
-import { ExpressionTokenizer, ExpressionErrors } from "../../utilities/expressionTokenizer.js";
+import { ExpressionTokenizer, ExpressionErrors } from "../../utilities/ExpressionTokenizer.js";
 
 class Display {
   node;
