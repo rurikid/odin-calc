@@ -1,14 +1,14 @@
+import { Utilities } from './utilities.js';
+
 class ExpressionTokenizer {
    
   static GetTokens(input) {
-    console.log(input);
-
     let tokens = [];
     let token = ExpressionToken();
 
     input.split('').forEach(char => {
 
-      if (this.isLiteral(char)) {
+      if (Utilities.isLiteral(char)) {
         if (token.type === undefined) {
           token = ExpressionToken(TokenTypes.literal, char === '_' ? '-' : char);
         } else if (token.type === TokenTypes.function) {
@@ -19,7 +19,7 @@ class ExpressionTokenizer {
         }
         return;
       }
-      else if (this.isLetter(char)) { 
+      else if (Utilities.isLetter(char)) { 
         if (token.type === undefined) {
           token = ExpressionToken(TokenTypes.function, char);
         } else if (token.type === TokenTypes.function) {
@@ -38,12 +38,86 @@ class ExpressionTokenizer {
         token = ExpressionToken();
       }
 
-      if (this.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); }
-      if (this.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); }
-      if (this.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); }
+      if (Utilities.isOperator(char)) { tokens.push(ExpressionToken(TokenTypes.operator, char)); return; }
+      if (Utilities.isLeftParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.leftParenthesis, char)); return; }
+      if (Utilities.isRightParenthesis(char)) { tokens.push(ExpressionToken(TokenTypes.rightParenthesis, char)); return; }
+
     });
 
+    if (token.value !== undefined) {
+      tokens.push(token);
+    }
+
+    this.evaluateSyntax(tokens);
+    
     return tokens;
+  }
+
+  static evaluateSyntax(tokens) {
+    if (tokens.length <= 1 && tokens[0].type !== TokenTypes.literal) throw ExpressionErrors.syntaxError;
+    if (tokens.length === 2) throw ExpressionErrors.syntaxError;
+
+    tokens.forEach((token, index) => {
+      if (index === 0) {
+        switch(token.type) {
+          case TokenTypes.rightParenthesis:
+          case TokenTypes.operator:
+            throw ExpressionErrors.syntaxError;
+        }
+      } else if (index === tokens.length - 1) {
+        switch(token.type) {
+          case TokenTypes.leftParenthesis:
+          case TokenTypes.function:
+          case TokenTypes.operator:
+            throw ExpressionErrors.syntaxError;
+        }
+      } else if (index !== 0 && index !== tokens.length - 1) {
+        let backType = tokens[index - 1].type;
+        let foreType = tokens[index + 1].type;
+        
+        switch(token.type) {
+          case TokenTypes.function:
+            if (backType === TokenTypes.rightParenthesis ||
+              backType === TokenTypes.literal ||
+              backType === TokenTypes.function ||
+              foreType !== TokenTypes.leftParenthesis) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.leftParenthesis:
+            if (backType === TokenTypes.rightParenthesis ||
+              backType === TokenTypes.literal ||
+              foreType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.operator) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.rightParenthesis:
+            if (backType === TokenTypes.function ||
+              backType === TokenTypes.leftParenthesis ||
+              backType === TokenTypes.operator ||
+              foreType === TokenTypes.function ||
+              foreType === TokenTypes.leftParenthesis ||
+              foreType === TokenTypes.literal) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.literal:
+            if (backType === TokenTypes.literal ||
+              backType === TokenTypes.function ||
+              backType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.literal ||
+              foreType === TokenTypes.function ||
+              foreType === TokenTypes.leftParenthesis) throw ExpressionErrors.syntaxError;
+            break;
+  
+          case TokenTypes.operator:
+            if (backType === TokenTypes.function ||
+              backType === TokenTypes.leftParenthesis ||
+              backType === TokenTypes.operator ||
+              foreType === TokenTypes.rightParenthesis ||
+              foreType === TokenTypes.operator) throw ExpressionErrors.syntaxError;
+            break;
+        }
+      }
+    });
   }
 
   static evaluate(tokens) {
@@ -125,7 +199,9 @@ class ExpressionTokenizer {
     let result;
     switch(operator.value) {
       case '^':
-        result = Math.pow(parseFloat(lhs.value), parseFloat(rhs.value));
+        result = parseFloat(lhs.value) > 0 ?
+          Math.pow(parseFloat(lhs.value), parseFloat(rhs.value)) :
+          -Math.pow(-parseFloat(lhs.value), parseFloat(rhs.value));
         break;
       case '÷':
         if (rhs.value === '0') throw ExpressionErrors.divideByZero;
@@ -172,16 +248,6 @@ class ExpressionTokenizer {
     }
     return ExpressionToken(TokenTypes.literal, result);
   }
-
-  static isLiteral = (char) => /\d|_|\./.test(char);
-
-  static isOperator = (char) => /÷|\*|\+|-|\^/.test(char);
-
-  static isLetter = (char) => /[a-z]/i.test(char);
-
-  static isRightParenthesis = (char) => char === ')';
-
-  static isLeftParenthesis = (char) => char === '(';
 }
 
 const ExpressionToken = (type, value) => ({ type: type, value: value })
@@ -201,4 +267,4 @@ const TokenTypes = {
   function: 'Function'
 }
 
-export { ExpressionTokenizer, ExpressionToken };
+export { ExpressionTokenizer, ExpressionToken, ExpressionErrors };

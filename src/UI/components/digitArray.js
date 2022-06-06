@@ -1,7 +1,7 @@
 import { DisplayAlign } from "../../enums/displayAlign.js";
 import { CellArray } from "./cellArray.js";
 import { Errors } from "../../vs-common/vs-logger.js";
-import { Utilities } from "../../utilities.js";
+import { Utilities } from "../../utilities/utilities.js";
 
 class DigitArray {
   node;
@@ -29,13 +29,10 @@ class DigitArray {
     this.clear();
   }
 
-  // TODO: backspace on shift left decimal, should shift left and remove decimal, cursor steady
   // removes the digit or decimal immediately preceding the cursor
   backspace() {
     if (this.inputIndex !== 0) {
       let referenceCell = this.node.childNodes[this.cursorIndex];
-
-      console.log(this.input[this.inputIndex]);
 
       // backspace on decimal should only remove decimal
       if (this.input[this.inputIndex - 1] === '.') {
@@ -101,11 +98,6 @@ class DigitArray {
         return;
       }
 
-      // if (digit === '_') {
-      //   this.insertSign();
-      //   return;
-      // }
-
       // get reference node
       let referenceCell = this.node.childNodes[this.cursorIndex];
 
@@ -131,22 +123,205 @@ class DigitArray {
   }
 
   insertDecimal() {
-    let referenceCell = this.node.childNodes[this.cursorIndex].previousSibling;
-    referenceCell.replaceWith(CellArray.getDecimalArray(
-      referenceCell.id === "decimal" ? false : true
-    ));
-
-    this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
-    this.inputIndex++;
-  }
-
-  insertSign() {
     let referenceCell = this.node.childNodes[this.cursorIndex];
+
+    // look back
+    for (let i = this.inputIndex - 1; i >= 0; i--) {
+      if (this.input[i] === '.') return;
+      if (!Utilities.isLiteral(this.input[i])) {
+        break;
+      }
+    }
     
+    // look forward
+    for (let i = this.inputIndex + 1; i < this.input.length; i++) {
+      if (this.input[i] === '.') return;
+      if (!Utilities.isLiteral(this.input[i])) {
+        break;
+      }
+    }
+
+    if (this.cursorIndex === 0 && this.inputIndex !== 0) {
+      this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
+      this.inputIndex++;
+      return;
+    }
+
+    if (!Utilities.isLiteral(this.input[this.inputIndex - 1])) {
+      if (this.cursorIndex === 0) {
+        this.node.firstChild.before(CellArray.getDecimalArray(true));
+        this.node.firstChild.before(CellArray.getCellArray('0'));
+      } else {
+        referenceCell.before(CellArray.getCellArray('0'));
+        referenceCell.before(CellArray.getDecimalArray(true));
+      }
+      this.input = this.input.slice(0, this.inputIndex) + '0.' + this.input.slice(this.inputIndex);
+      this.inputIndex += 2;
+      if (this.cursorIndex === this.cellCount) {
+        this.node.firstChild.remove();
+        this.node.firstChild.remove();
+        return;
+      }
+      this.cursorIndex += 2;
+      this.node.lastChild.remove();
+      this.node.lastChild.remove();
+    } else if (this.input[this.inputIndex - 1] === '_') {
+      this.insert('0.');
+    } else {
+      referenceCell.previousSibling.replaceWith(CellArray.getDecimalArray(true));
+      this.input = this.input.slice(0, this.inputIndex) + '.' + this.input.slice(this.inputIndex);
+      this.inputIndex++;
+    }
   }
 
-  getInputGroup() {
+  // inserts a digit at the given indices; hard insert, no additional logic
+  insertAtIndex(digit, cursorIndex, inputIndex) {
+    // if digitIndex would be off screen
+    if (inputIndex < this.inputIndex - (this.cursorIndex / 2)) {
 
+      if (digit === '.' && this.input[inputIndex] === '.') {
+        this.input = this.input.slice(0, inputIndex) + this.input.slice(inputIndex + 1);
+        this.inputIndex--;
+        return;
+      }
+      this.input = this.input.slice(0, inputIndex) + digit + this.input.slice(inputIndex);
+      this.inputIndex++;
+      return;
+    }
+
+    if (digit === '.') {
+      if (this.input[inputIndex] === '.') {
+        this.node.childNodes[cursorIndex].previousSibling.replaceWith(CellArray.getDecimalArray(false));
+        this.input = this.input.slice(0, inputIndex - 1) + this.input.slice(inputIndex);
+        this.inputIndex = inputIndex <= this.inputIndex ? this.inputIndex - 1 : this.inputIndex;
+        return;
+      } else {
+        this.input = this.input.slice(0, inputIndex) + digit + this.input.slice(inputIndex);
+        this.node.childNodes[cursorIndex].previousSibling.replaceWith(CellArray.getDecimalArray(true));
+        this.inputIndex = inputIndex <= this.inputIndex ? this.inputIndex + 1 : this.inputIndex;
+        return;
+      }
+    }
+
+    this.node.lastChild.remove();
+    this.node.lastChild.remove();
+
+    this.node.children[cursorIndex].before(CellArray.getDecimalArray(false));
+    this.node.children[cursorIndex].before(CellArray.getCellArray(digit));
+
+    this.input = this.input.slice(0, inputIndex) + digit + this.input.slice(inputIndex);
+
+    if (cursorIndex <= this.cursorIndex) this.cursorIndex = Utilities.clamp(this.cursorIndex + 2, 0, this.cellCount);
+    this.inputIndex = inputIndex <= this.inputIndex ? this.inputIndex + 1 : this.inputIndex;
+  }
+
+  // inserts a sign in place or toggles if within literal
+  insertSign() {
+    let cursorIndex = this.cursorIndex;
+    let inputIndex = this.inputIndex;
+    
+    if (inputIndex === 0) {
+      this.insert("_");
+      return;
+    }
+
+    // if not on literal seek back for literal
+    if (!Utilities.isLiteral(this.input[inputIndex]))
+    {
+      // if literal seek back to toggle sign
+      if (Utilities.isLiteral(this.input[inputIndex - 1])) {
+        inputIndex--;
+        cursorIndex -= 2;
+      } else {
+        // if not literal, toggle sign
+        this.insert("_");
+        return;
+      }
+    }
+
+    // if on literal, seek back to toggle sign
+    for (let i = inputIndex; i >= 0; i--) {
+      // correct index for decimal
+      if (this.input[i] === '.') {
+        i = Math.max(i - 1, 0);
+      }
+
+      // if on sign, toggle sign
+      if (this.input[i] === '_') {
+        if (cursorIndex >= 0) {
+          this.deleteIndex(cursorIndex / 2);
+          if (cursorIndex < this.cursorIndex) {
+            this.cursorIndex = Math.max(this.cursorIndex - 2, 0);
+          } else if (cursorIndex === this.cursorIndex) {
+            this.addCursor();
+          }
+        }
+        return;
+      }
+
+      // if index 0, toggle sign
+      if (i === 0) {
+        if (cursorIndex === 0) {
+          this.node.lastChild.remove();
+          this.node.lastChild.remove();
+          this.node.firstChild.before(CellArray.getDecimalArray(false));
+          this.node.firstChild.before(CellArray.getCellArray("_"));
+          this.cursorIndex += 2;
+        }
+        this.input = "_" + this.input;
+        this.inputIndex++;
+        return;
+      }
+
+      // if not literal, add sign
+      if (!Utilities.isLiteral(this.input[i])) {
+        if (cursorIndex >= 0) {
+          this.node.lastChild.remove();
+          this.node.lastChild.remove();
+          this.node.children[cursorIndex + 2].before(CellArray.getDecimalArray(false));
+          this.node.children[cursorIndex + 2].before(CellArray.getCellArray("_"));
+          this.cursorIndex = Utilities.clamp(this.cursorIndex + 2, 0, this.cellCount);
+        }
+        this.inputIndex++;
+        this.input = this.input.slice(0, i) + "_" + this.input.slice(i);
+        return;
+      }
+
+      cursorIndex -= 2;
+    }
+  }
+
+  deleteIndex(digitIndex) {
+    let cellIndex = Utilities.clamp(digitIndex * 2, 0, this.cellCount);
+    this.node.children[cellIndex].remove();
+    this.node.children[cellIndex].remove();
+
+    let inputIndex = this.inputIndex - (this.cursorIndex / 2) + digitIndex - 1;
+    let inputSplit = this.input.slice(0, inputIndex).split('.');
+    if (inputSplit.length > 1) {
+      inputIndex += inputSplit.length - 1;
+    }
+
+    let inputScroll = inputIndex + (this.digitCount - (cellIndex / 2));
+
+    // scroll input digit
+    if (this.input.length > inputScroll)
+    {
+      // case for decimal
+      if (this.input[inputScroll] == '.') {
+        this.node.append(CellArray.getDecimalArray(true));
+        this.inputScroll++;
+      } else {
+        this.node.append(CellArray.getDecimalArray(false));
+      }
+      this.node.append(CellArray.getCellArray(this.input[inputScroll]));
+    } else {
+      this.node.append(CellArray.getDecimalArray(false));
+      this.node.append(CellArray.getEmptyArray());
+    }
+
+    if (inputIndex < this.inputIndex) this.inputIndex--;
+    this.input = this.input.slice(0, inputIndex) + this.input.slice(inputIndex + 1);
   }
 
   // clears the contents of the display and current formula
@@ -170,6 +345,12 @@ class DigitArray {
   // increments cursor position
   incrementCursor() {
     if (this.inputIndex < this.input.length) {
+      // increment for decimal
+      if (this.input[this.inputIndex + 1] === '.'
+        && this.cursorIndex != this.cellCount) {
+        this.inputIndex++;
+      }
+
       // increment input
       this.inputIndex++;
 
@@ -201,8 +382,8 @@ class DigitArray {
   }
 
   // shifts the digit array one digit right
-  shiftRight() {
-    if (this.cursorIndex === this.cellCount) {
+  shiftRight(force = false) {
+    if (this.cursorIndex === this.cellCount || force) {
       
       // scroll right
       this.node.firstChild.remove();
@@ -229,10 +410,9 @@ class DigitArray {
   // decrements cursor position
   decrementCursor() {
     if (this.inputIndex > 0) {
-      console.log(this.input[this.inputIndex]);
-
       // decrement input
-      if (this.input[this.inputIndex - 1] === '.') {
+      if (this.input[this.inputIndex - 1] === '.' &&
+        this.cursorIndex !== 0) {
         this.inputIndex--;
       }
       this.inputIndex = Math.max(this.inputIndex - 1, 0);
@@ -253,7 +433,7 @@ class DigitArray {
     if (this.cursorIndex === 0) {
       this.node.lastChild.remove();
       this.node.lastChild.remove();
-      console.log(`shift: ${this.input[this.inputIndex]}`);
+
       if (this.input[this.inputIndex] === '.') {
         this.node.firstChild.before(CellArray.getDecimalArray(true));
         this.inputIndex--;
@@ -262,6 +442,55 @@ class DigitArray {
       }
 
       this.node.firstChild.before(CellArray.getCellArray(this.input[this.inputIndex]));
+    }
+  }
+  
+  // shifts left to fit errors
+  errorShift() {
+    this.node.lastChild.remove();
+    this.node.lastChild.remove();
+    this.node.firstChild.before(CellArray.getDecimalArray(false));
+    this.node.firstChild.before(CellArray.getCellArray(this.input[0]));
+  }
+
+  // sets the calculation result to right side
+  setResult(result) {
+    this.input = result;
+    this.node.innerHTML = '';
+    
+    result.split('').forEach((digit, index) => {
+      if (index === result.length - 1 && digit === '.') return;
+      if (index === 0 && digit !== '.') {
+        this.node.appendChild(CellArray.getCellArray(digit));
+        return;
+      }
+      
+      if (digit === '.') {
+        this.node.appendChild(CellArray.getDecimalArray(true));
+        return;
+      }
+      
+      if (result[index - 1] !== '.') {
+        this.node.appendChild(CellArray.getDecimalArray(false));
+      }
+      this.node.appendChild(CellArray.getCellArray(digit));
+    });
+
+    while (this.node.children.length < this.cellCount) {
+      this.node.firstChild.before(CellArray.getDecimalArray(false));
+      this.node.firstChild.before(CellArray.getEmptyArray());
+    }
+  }
+
+  alignDisplay(align) {
+    if (align === DisplayAlign.Left) {
+      while (this.inputIndex !== 0) {
+        this.decrementCursor();
+      }
+    } else if (align === DisplayAlign.Right) {
+      while(this.inputIndex !== this.input.length) {
+        this.incrementCursor();
+      }
     }
   }
 }
