@@ -42,9 +42,9 @@ class Display {
           this.input.removeCursor();
           if (this.input.input === '') { this.output.setResult('0'); return; };
 
-          let result = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
+          this.lastInput = ExpressionTokenizer.evaluate(ExpressionTokenizer.GetTokens(this.input.input)).value;
 
-          this.output.setResult(this.formatResult(parseFloat(result)));
+          this.output.setResult(this.formatResult(parseFloat(this.lastInput)));
           this.input.alignDisplay(DisplayAlign.Left);
           this.input.removeCursor();
         } catch (error) {
@@ -66,6 +66,11 @@ class Display {
         }
         break;
       case 'backspace':
+        if (this.lastInput.length > 0) {
+          this.input.clear();
+          this.output.clear();
+          this.lastInput === '';
+        }
         this.input.backspace();
         break;
       case 'clear':
@@ -90,9 +95,19 @@ class Display {
         this.input.incrementCursor();
         break;
       case 'plusMinus':
+        if (this.lastInput.length > 0) {
+          this.input.clear();
+          this.output.clear();
+          this.lastInput === '';
+        }
         this.input.insertSign();
         break;
       case 'decimal':
+        if (this.lastInput.length > 0) {
+          this.input.clear();
+          this.output.clear();
+          this.lastInput === '';
+        }
         this.input.insertDecimal();
         break;
       default:
